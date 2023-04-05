@@ -1,0 +1,13 @@
+# Stage 1: Build the application
+FROM golang:alpine AS builder
+WORKDIR /out
+
+COPY go.mod ./
+COPY *.go ./
+RUN go build -a -installsuffix cgo -o go-app .
+
+# Stage 2: Package the application
+FROM alpine
+WORKDIR /root/
+COPY --from=builder /out/go-app .
+CMD ["./go-app"]
