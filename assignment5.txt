@@ -1,0 +1,34 @@
+Docker Compose YAML
+*******************
+
+version: '3'
+services:
+  app:
+    container_name: demo-go-app
+    image: demo-go-app
+    build:
+      context: .
+      dockerfile: Dockerfile.multistage
+    ports:
+      - "8080:8080"
+    volumes:
+      - vote_volume:/app/data
+volumes:
+  vote_volume:
+  
+  
+  Multi Stage
+  ***********
+FROM golang:alpine AS build
+COPY main.go /go/src/app/
+WORKDIR /go/src/app/
+RUN go mod init
+RUN go get -d -v ./...
+RUN go install -v ./...
+RUN go build -o demo-go-app
+
+
+FROM build AS run
+WORKDIR /app
+COPY --from=build /go/src/app/demo-go-app /app
+CMD ["./demo-go-app"]
