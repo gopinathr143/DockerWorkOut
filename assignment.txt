@@ -1,3 +1,13 @@
 Docker Assignment # 1
 
-docker run -d --name nginx-c1 -p 8008:8008 nginx
+//Start/Run the container with port forward
+1. docker run -d --name nginx-c1 -p 8008:8008 nginx
+
+//check logs
+2. docker logs container_name
+
+// Accessing inside the container
+3. docker exec -it nginx-c1 sh
+
+// Stop the containter
+4. docker stop nginx-c1
