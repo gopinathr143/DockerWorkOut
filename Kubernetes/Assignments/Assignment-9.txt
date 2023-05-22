@@ -1,0 +1,54 @@
+Secret Object Creation
+*******************
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongo-secret
+type: Opaque
+data:
+  MONGODB_URI: bW9uZ29kYjovL21vbmdvL21ldGFkYXRh
+
+Metadata service pod creation
+*****************************
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: metadata-service-deployment
+ labels:
+  app: metadata-service
+spec:
+ selector:
+  matchLabels:
+   app: metadata-service
+ template:
+  metadata:
+   name: metadata-service-pod
+   labels:
+    app: metadata-service
+  spec:
+   containers:
+   - name: metadata-service
+     image: luckyganesh/metadata-service:v2-arm
+     ports:
+     - containerPort: 8080
+     readinessProbe:
+      httpGet:
+       path: /actuator/health
+       port: 8080
+      initialDelaySeconds: 25
+      periodSeconds: 5
+      failureThreshold: 8
+     livenessProbe:
+      httpGet:
+       path: /actuator/health
+       port: 8080
+      initialDelaySeconds: 25
+      periodSeconds: 10
+      failureThreshold: 4
+     env:
+     - name: MONGODB_URI
+       valueFrom:
+        secretKeyRef:
+         name: mongo-secret
+         key: MONGODB_URI
+ replicas: 3

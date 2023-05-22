@@ -1,0 +1,53 @@
+Pod Creation Yaml
+*****************
+apiVersion: v1
+kind: Pod
+metadata:
+  name: metadata-service
+spec:
+  containers:
+  - name: metadata-service
+    image: luckyganesh/metadata-service:v1-arm
+    ports:
+    - containerPort: 8080
+
+
+Pod Creation
+*************
+kubectl create -f assign_pod_1.yaml
+
+
+Describing pods
+***************
+kubectl describe pod metadata-service
+
+
+Viewing logs
+************
+kubectl logs metadata-service
+
+
+Find pod IP
+********
+kubectl get pods -o wide
+
+
+Hit the Curl in the Colima SSH with Pod IP
+******************************
+curl http://<pod_ip>:8080/metadata
+
+
+Exec into the container using /bin/sh command
+**********************************************
+kubectl exec --stdin --tty metadata-service -- /bin/sh
+
+
+
+
+Start colima 
+************
+colima start --cpu=4 --memory=8 --kubernetes
+
+Get contexts
+************
+kubectl config get-contexts

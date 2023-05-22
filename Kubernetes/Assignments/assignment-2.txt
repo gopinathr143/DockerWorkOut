@@ -1,0 +1,48 @@
+Replicaset Creation Yaml
+*****************
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: metadata-service-deployment
+ labels:
+  app: metadata-service
+spec:
+ selector:
+  matchLabels:
+   app: metadata-service
+ template:
+  metadata:
+   name: metadata-service-pod
+   labels:
+    app: metadata-service
+  spec:
+   containers:
+   - name: metadata-service
+     image: luckyganesh/metadata-service:v1-arm
+     ports:
+     - containerPort: 8080
+     readinessProbe:
+      httpGet:
+       path: /actuator/health
+       port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      failureThreshold: 8
+     livenessProbe:
+      httpGet:
+       path: /actuator/health
+       port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      failureThreshold: 4
+ replicas: 3
+
+
+Create Metadata
+***************
+curl --header "Content-type: application/json" --request POST --data '{"group":"Gopinath","name":"City","value":"Coimbatore"}' http://172.17.0.8:8080/metadata
+
+
+Get metadata
+************
+curl http://172.17.0.8:8080/metadata
